@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>상황별 선물 추천기</title>
+    <title>상황별 선물 추천기 - 다양성 강화</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 30px; }
         select, button { padding: 8px; margin: 10px; }
@@ -14,8 +14,8 @@
 <body>
     <h1>🎁 상황별 선물 추천기</h1>
     <p style="color: #666; font-size: 16px;">
-        어떤 선물이 좋을지 망설여진다면,<br>
-        당신의 마음을 닮은 선물을 함께 골라드릴게요.
+        같은 조건이라도 새로운 선물이 추천되도록<br>
+        다양성을 강화했어요. 다시 눌러보세요!
     </p>
     <div>
         <label>기념일:</label>
@@ -82,34 +82,39 @@
             const resultArea = document.getElementById("results");
             resultArea.innerHTML = "";
 
-            let filtered = data.filter(item =>
+            // 기본 필터
+            let strictFiltered = data.filter(item =>
                 (!r || item.reason === r) &&
                 (!t || item.target === t) &&
                 (!p || item.price_range === p) &&
                 (!s || item.style === s)
             );
 
-            if (filtered.length === 0) {
-                resultArea.innerHTML = "<p>조건에 맞는 선물이 없습니다. 다른 조건을 시도해보세요.</p>";
-                return;
-            }
+            // Relax 조건: 스타일 무시
+            let relaxedFiltered = data.filter(item =>
+                (!r || item.reason === r) &&
+                (!t || item.target === t) &&
+                (!p || item.price_range === p)
+            );
 
-            let pool = shuffle([...filtered]);
-            let uniqueItems = [];
+            // 섞기
+            let candidatePool = shuffle([...strictFiltered, ...relaxedFiltered]);
+            let selected = [];
 
-            for (let i = 0; i < pool.length && uniqueItems.length < 3; i++) {
-                if (!lastRecommendedNames.has(pool[i].item_name)) {
-                    uniqueItems.push(pool[i]);
+            for (let i = 0; i < candidatePool.length && selected.length < 3; i++) {
+                if (!lastRecommendedNames.has(candidatePool[i].item_name)) {
+                    selected.push(candidatePool[i]);
                 }
             }
 
-            if (uniqueItems.length < 3) {
-                uniqueItems = shuffle([...filtered]).slice(0, 3);
+            // 그래도 부족하면 랜덤 3개
+            if (selected.length < 3) {
+                selected = shuffle([...relaxedFiltered]).slice(0, 3);
             }
 
-            lastRecommendedNames = new Set(uniqueItems.map(item => item.item_name));
+            lastRecommendedNames = new Set(selected.map(item => item.item_name));
 
-            uniqueItems.forEach(item => {
+            selected.forEach(item => {
                 const div = document.createElement("div");
                 div.className = "card";
                 div.innerHTML = `<h3>${item.item_name}</h3>
