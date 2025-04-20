@@ -20,13 +20,13 @@
     </p>
     <div>
         <label>기념일:</label>
-        <select id="reason"><option value="">--선택--</option></select>
+        <select id="reason"></select>
         <label>대상자:</label>
-        <select id="target"><option value="">--선택--</option></select>
+        <select id="target"></select>
         <label>가격대:</label>
-        <select id="price"><option value="">--선택--</option></select>
+        <select id="price"></select>
         <label>스타일:</label>
-        <select id="style"><option value="">--선택--</option></select>
+        <select id="style"></select>
     </div>
     <button onclick="recommend()">추천받기</button>
     <div id="results"></div>
@@ -47,15 +47,16 @@
         const priceSet = [...new Set(data.map(item => item.price_range))];
         const styleSet = [...new Set(data.map(item => item.style))];
 
-        window.onload = function() {
+        document.addEventListener("DOMContentLoaded", () => {
             fillSelect("reason", reasonSet);
             fillSelect("target", targetSet);
             fillSelect("price", priceSet);
             fillSelect("style", styleSet);
-        }
+        });
 
         function fillSelect(id, options) {
             const select = document.getElementById(id);
+            select.innerHTML = '<option value="">--선택--</option>';
             options.forEach(opt => {
                 const option = document.createElement("option");
                 option.value = opt;
