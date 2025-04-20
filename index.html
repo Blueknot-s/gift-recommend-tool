@@ -5,11 +5,10 @@
     <meta charset="UTF-8">
     <title>상황별 선물 추천기</title>
     <style>
-        body { font-family: 'Arial', sans-serif; text-align: center; padding: 30px; }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 30px; }
         select, button { padding: 8px; margin: 10px; }
-        .card { border: 1px solid #ccc; padding: 15px; margin: 20px auto; width: 80%; border-radius: 10px; box-shadow: 2px 2px 10px #eee; }
+        .card { border: 1px solid #ccc; padding: 15px; margin: 10px auto; width: 80%; border-radius: 10px; box-shadow: 2px 2px 10px #eee; }
         .emotion { font-style: italic; color: #777; margin-top: 20px; }
-        .copy-button { margin-top: 10px; padding: 6px 12px; background: #f2f2f2; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -20,13 +19,13 @@
     </p>
     <div>
         <label>기념일:</label>
-        <select id="reason"></select>
+        <select id="reason"><option value="">--선택--</option></select>
         <label>대상자:</label>
-        <select id="target"></select>
+        <select id="target"><option value="">--선택--</option></select>
         <label>가격대:</label>
-        <select id="price"></select>
+        <select id="price"><option value="">--선택--</option></select>
         <label>스타일:</label>
-        <select id="style"></select>
+        <select id="style"><option value="">--선택--</option></select>
     </div>
     <button onclick="recommend()">추천받기</button>
     <div id="results"></div>
@@ -47,16 +46,15 @@
         const priceSet = [...new Set(data.map(item => item.price_range))];
         const styleSet = [...new Set(data.map(item => item.style))];
 
-        document.addEventListener("DOMContentLoaded", () => {
+        window.onload = function() {
             fillSelect("reason", reasonSet);
             fillSelect("target", targetSet);
             fillSelect("price", priceSet);
             fillSelect("style", styleSet);
-        });
+        }
 
         function fillSelect(id, options) {
             const select = document.getElementById(id);
-            select.innerHTML = '<option value="">--선택--</option>';
             options.forEach(opt => {
                 const option = document.createElement("option");
                 option.value = opt;
@@ -89,13 +87,9 @@
             const item = filtered[Math.floor(Math.random() * filtered.length)];
             const div = document.createElement("div");
             div.className = "card";
-            div.innerHTML = `
-                <h3>${item.item_name}</h3>
-                <p>${item.item_description}</p>
-                <small><b>태그:</b> ${item.tags}</small><br>
-                <button class="copy-button" onclick="copyToClipboard(`추천 선물: ${item.item_name}\n내용: ${item.item_description}\n태그: ${item.tags}`)">📋 결과 복사하기</button>
-                <br><button onclick="recommend()">🔄 다시 추천받기</button>
-            `;
+            div.innerHTML = `<h3>${item.item_name}</h3>
+                             <p>${item.item_description}</p>
+                             <small><b>태그:</b> ${item.tags}</small>`;
             resultArea.appendChild(div);
 
             const emotion = emotions[Math.floor(Math.random() * emotions.length)];
@@ -103,12 +97,6 @@
             emoDiv.className = "emotion";
             emoDiv.innerText = emotion;
             resultArea.appendChild(emoDiv);
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert("복사되었습니다! 💌");
-            });
         }
     </script>
 </body>
